@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LedgerSchool — Learn finance one cell at a time</title>
+<meta name="description" content="Learn accounting and finance the W3Schools way: tiny lessons, a live spreadsheet in your browser, and a balance sheet you build yourself.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#182530;
+  --paper:#FBF9F3;
+  --card:#FFFFFF;
+  --rule:#E3DDCE;
+  --rule-strong:#C9C1AC;
+  --green:#1E6B4E;
+  --green-soft:#E4F0EA;
+  --red:#B23A2F;
+  --red-soft:#F7E6E3;
+  --amber:#B07C1F;
+  --muted:#6B7480;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --body:'Public Sans',system-ui,sans-serif;
+  --display:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.65;font-size:16px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:50;background:var(--ink);color:var(--paper);display:flex;align-items:center;gap:16px;padding:0 20px;height:56px}
+.brand{font-family:var(--display);font-weight:900;font-size:20px;letter-spacing:.2px;color:var(--paper);text-decoration:none}
+.brand em{font-style:normal;color:#8FD6B4}
+.topbar .tag{font-size:12.5px;color:#B7C2CC;display:none}
+@media(min-width:760px){.topbar .tag{display:block}}
+.topbar .spacer{flex:1}
+.progress-pill{font-family:var(--mono);font-size:12px;background:#243544;border:1px solid #37506333;color:#CFE8DA;padding:4px 12px;border-radius:999px}
+#menuBtn{display:none;background:none;border:1px solid #3B4C5B;color:var(--paper);border-radius:6px;padding:6px 10px;font-family:var(--body);font-size:13px;cursor:pointer}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 56px)}
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  #menuBtn{display:block}
+  .sidebar{position:fixed;inset:56px auto 0 0;width:290px;z-index:40;transform:translateX(-100%);transition:transform .25s ease;box-shadow:6px 0 24px rgba(0,0,0,.15)}
+  .sidebar.open{transform:translateX(0)}
+}
+
+/* ---------- sidebar (syllabus) ---------- */
+.sidebar{background:#F3EFE4;border-right:1px solid var(--rule-strong);overflow-y:auto;padding:20px 0 40px}
+.mod{margin-bottom:6px}
+.mod-head{display:flex;align-items:baseline;gap:10px;padding:12px 20px 6px;cursor:default}
+.mod-code{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--green);letter-spacing:.5px}
+.mod-name{font-weight:700;font-size:13.5px;text-transform:uppercase;letter-spacing:.6px;color:#4A5560}
+.lesson-link{display:flex;align-items:center;gap:10px;padding:8px 20px 8px 24px;font-size:14.5px;color:var(--ink);text-decoration:none;border-left:3px solid transparent;cursor:pointer}
+.lesson-link:hover{background:#ECE6D6}
+.lesson-link.active{background:var(--card);border-left-color:var(--green);font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--rule-strong);flex:none}
+.lesson-link.done .dot{background:var(--green);border-color:var(--green)}
+.sidebar .foot{padding:18px 20px;font-size:12px;color:var(--muted);border-top:1px dashed var(--rule-strong);margin-top:14px}
+
+/* ---------- main ---------- */
+.main{padding:36px 24px 90px;max-width:860px;width:100%;margin:0 auto}
+@media(min-width:1200px){.main{padding:44px 56px 100px}}
+.crumb{font-family:var(--mono);font-size:12px;color:var(--green);letter-spacing:.4px;margin-bottom:10px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(30px,4.5vw,44px);line-height:1.12;letter-spacing:-.3px;margin-bottom:16px}
+h2{font-family:var(--display);font-weight:700;font-size:23px;margin:36px 0 10px}
+p{margin-bottom:14px;max-width:64ch}
+p.lede{font-size:18px;color:#3C4854}
+strong{font-weight:700}
+.kbd{font-family:var(--mono);font-size:.85em;background:#EDE8DA;border:1px solid var(--rule-strong);border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+a.inline{color:var(--green);text-decoration:underline;text-underline-offset:2px}
+
+/* definition / example cards */
+.defcard{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--green);border-radius:8px;padding:18px 20px;margin:20px 0}
+.defcard .lbl{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--green);text-transform:uppercase;margin-bottom:6px}
+.formula{font-family:var(--mono);font-size:16px;background:#182530;color:#DFF3E8;border-radius:8px;padding:14px 18px;margin:18px 0;overflow-x:auto;white-space:pre}
+.example{background:#FDF6E8;border:1px solid #EAD9B0;border-radius:8px;padding:16px 20px;margin:18px 0}
+.example .lbl{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--amber);text-transform:uppercase;margin-bottom:6px}
+.note{font-size:14px;color:var(--muted);border-top:1px dashed var(--rule-strong);padding-top:10px;margin-top:22px}
+
+/* try-it button */
+.trybtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;font-family:var(--body);font-weight:700;font-size:15px;padding:11px 22px;border-radius:8px;cursor:pointer;margin:8px 0 4px;box-shadow:0 2px 0 #14503A}
+.trybtn:hover{background:#1A5F45}
+.trybtn:active{transform:translateY(1px);box-shadow:0 1px 0 #14503A}
+
+/* ---------- spreadsheet sandbox ---------- */
+.sandbox{background:var(--card);border:1px solid var(--rule-strong);border-radius:10px;margin:16px 0 8px;overflow:hidden;box-shadow:0 3px 14px rgba(24,37,48,.06)}
+.sandbox[hidden]{display:none}
+.sb-head{display:flex;align-items:center;gap:10px;background:#F3EFE4;border-bottom:1px solid var(--rule-strong);padding:8px 14px}
+.sb-title{font-family:var(--mono);font-size:12px;color:#4A5560;letter-spacing:.4px}
+.sb-head .task{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.fbar{display:flex;align-items:stretch;border-bottom:1px solid var(--rule)}
+.fbar .cellref{font-family:var(--mono);font-size:13px;min-width:56px;display:flex;align-items:center;justify-content:center;background:#F8F5EC;border-right:1px solid var(--rule);color:var(--green);font-weight:600}
+.fbar .fx{font-family:var(--mono);font-size:13px;color:var(--muted);display:flex;align-items:center;padding:0 8px;border-right:1px solid var(--rule)}
+.fbar input{flex:1;border:none;outline:none;font-family:var(--mono);font-size:14px;padding:10px 12px;background:#fff;color:var(--ink)}
+.fbar input:focus{background:#FFFDF4}
+.gridwrap{overflow-x:auto}
+table.grid{border-collapse:collapse;width:100%;min-width:520px;font-size:14px}
+.grid th{background:#F3EFE4;border:1px solid var(--rule);font-family:var(--mono);font-size:11.5px;font-weight:500;color:#7A828C;padding:4px 8px;text-align:center;min-width:40px}
+.grid td{border:1px solid var(--rule);padding:7px 12px;background:#fff;cursor:cell;min-width:96px;height:36px}
+.grid td.lab{font-weight:600;background:#FBF9F3;cursor:default;font-size:13.5px}
+.grid td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.grid td.locked{color:#3C4854;background:#FBF9F3}
+.grid td.inputcell{background:#FFFDF0}
+.grid td.sel{outline:2.5px solid var(--green);outline-offset:-2px;background:#F2FAF5}
+.grid td.ok{background:var(--green-soft)!important}
+.grid td.bad{background:var(--red-soft)!important}
+.grid td.total{border-top:2px solid var(--ink);font-weight:600}
+.sb-foot{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 14px;background:#FBF9F3;border-top:1px solid var(--rule)}
+.checkbtn{background:var(--ink);color:#fff;border:none;font-weight:700;font-size:14px;padding:9px 18px;border-radius:7px;cursor:pointer}
+.checkbtn:hover{background:#243544}
+.resetbtn{background:none;border:1px solid var(--rule-strong);color:var(--muted);font-size:13px;padding:8px 14px;border-radius:7px;cursor:pointer}
+.feedback{font-size:14px;font-weight:600}
+.feedback.good{color:var(--green)}
+.feedback.badf{color:var(--red)}
+.hinttog{margin-left:auto;background:none;border:none;color:var(--green);font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.hintbox{display:none;padding:10px 16px;font-size:13.5px;background:#FDF6E8;border-top:1px dashed #EAD9B0;color:#6B5A2E}
+.hintbox.show{display:block}
+
+/* tie meter (capstone) */
+.tiemeter{display:flex;align-items:center;gap:14px;margin:14px 0;padding:14px 18px;border-radius:10px;border:1.5px dashed var(--rule-strong);background:var(--card);font-family:var(--mono)}
+.tiemeter .val{font-size:22px;font-weight:600}
+.tiemeter.tied{border-color:var(--green);background:var(--green-soft)}
+.tiemeter.tied .val{color:var(--green)}
+.tiemeter.off .val{color:var(--red)}
+.tiemeter .cap{font-family:var(--body);font-size:13px;color:var(--muted)}
+
+/* classify exercise */
+.classify{margin:16px 0}
+.chip{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:10px 14px;margin-bottom:10px}
+.chip .item{font-weight:600;font-size:14.5px;margin-right:auto}
+.chip button{border:1px solid var(--rule-strong);background:#FBF9F3;border-radius:999px;padding:5px 13px;font-size:13px;cursor:pointer;color:#3C4854}
+.chip button:hover{border-color:var(--green);color:var(--green)}
+.chip button.pick{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip.right{border-color:var(--green);background:var(--green-soft)}
+.chip.wrong{border-color:var(--red);background:var(--red-soft)}
+.chip .why{width:100%;font-size:13px;color:var(--muted);display:none}
+.chip.right .why,.chip.wrong .why{display:block}
+
+/* quiz */
+.quiz{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:18px 20px;margin:26px 0}
+.quiz .qlbl{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--green);text-transform:uppercase;margin-bottom:8px}
+.quiz .qq{font-weight:600;margin-bottom:12px}
+.quiz .opt{display:block;width:100%;text-align:left;background:#FBF9F3;border:1px solid var(--rule);border-radius:7px;padding:10px 14px;margin-bottom:8px;font-size:14.5px;cursor:pointer;font-family:var(--body);color:var(--ink)}
+.quiz .opt:hover{border-color:var(--green)}
+.quiz .opt.right{background:var(--green-soft);border-color:var(--green);font-weight:600}
+.quiz .opt.wrong{background:var(--red-soft);border-color:var(--red)}
+.quiz .expl{display:none;font-size:13.5px;color:var(--muted);margin-top:6px}
+.quiz .expl.show{display:block}
+
+/* pager */
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;border-top:1px solid var(--rule-strong);padding-top:20px}
+.pager button{background:var(--card);border:1px solid var(--rule-strong);border-radius:8px;padding:12px 18px;font-family:var(--body);font-size:14.5px;cursor:pointer;color:var(--ink);max-width:48%}
+.pager button:hover{border-color:var(--green);color:var(--green)}
+.pager button b{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:2px}
+.pager button:disabled{opacity:.35;cursor:default}
+.pager .next{margin-left:auto;text-align:right}
+
+/* landing hero */
+.hero-eq{font-family:var(--display);font-weight:900;font-size:clamp(26px,5vw,52px);line-height:1.15;margin:26px 0 8px;letter-spacing:-.5px}
+.hero-eq .a{color:var(--ink)} .hero-eq .l{color:var(--green)} .hero-eq .e{color:var(--amber)}
+.hero-sub{font-size:14px;font-family:var(--mono);color:var(--muted);margin-bottom:26px}
+.pathline{border-left:2px solid var(--rule-strong);margin:26px 0;padding-left:20px}
+.pathline .step{margin-bottom:14px}
+.pathline .step .c{font-family:var(--mono);font-size:11px;color:var(--green)}
+.pathline .step .t{font-weight:600}
+.pathline .step .d{font-size:14px;color:var(--muted)}
+.badge-store{display:inline-block;background:#FDF6E8;border:1px solid #EAD9B0;color:#6B5A2E;font-size:12.5px;border-radius:999px;padding:4px 12px;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button id="menuBtn" aria-label="Open lesson list">☰ Lessons</button>
+  <a class="brand" href="#" onclick="go('home');return false;">Ledger<em>School</em></a>
+  <span class="tag">Learn finance the way it's built — one cell at a time.</span>
+  <span class="spacer"></span>
+  <span class="progress-pill" id="progressPill">0 / 9 complete</span>
+</header>
+
+<div class="shell">
+  <nav class="sidebar" id="sidebar" aria-label="Course syllabus"></nav>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* =====================================================================
+   LedgerSchool v1 — a W3Schools-style finance course with a live
+   spreadsheet engine. One company (Bombay Bean Coffee Co.) runs through
+   every lesson; the capstone assembles its full balance sheet.
+   Static, no build step: push to GitHub Pages as-is.
+   ===================================================================== */
+
+/* ---------- tiny formula engine ---------- */
+function makeSheet(def){
+  // def.cells: { "B2": {v:"1200000", locked:true, cls:"num"}, ... }
+  const state = {};
+  for (const k in def.cells) state[k] = { raw: String(def.cells[k].v ?? ""), meta: def.cells[k] };
+  function colToIdx(c){let n=0;for(const ch of c)n=n*26+(ch.charCodeAt(0)-64);return n;}
+  function expandRange(a,b){
+    const m1=a.match(/([A-Z]+)(\d+)/),m2=b.match(/([A-Z]+)(\d+)/);
+    const c1=colToIdx(m1[1]),c2=colToIdx(m2[1]),r1=+m1[2],r2=+m2[2];
+    const out=[];
+    for(let c=Math.min(c1,c2);c<=Math.max(c1,c2);c++)
+      for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)
+        out.push(String.fromCharCode(64+c)+r);
+    return out;
+  }
+  function val(ref,visiting){
+    visiting = visiting || new Set();
+    const cell = state[ref];
+    if(!cell || cell.raw==="") return 0;
+    if(visiting.has(ref)) throw {cyc:true};
+    visiting.add(ref);
+    let raw = cell.raw.trim();
+    if(raw[0] !== "="){
+      const n = Number(raw.replace(/,/g,""));
+      visiting.delete(ref);
+      return isNaN(n) ? 0 : n;
+    }
+    let expr = raw.slice(1).toUpperCase();
+    expr = expr.replace(/SUM\(\s*([A-Z]+\d+)\s*:\s*([A-Z]+\d+)\s*\)/g,(_,a,b)=>{
+      return "(" + expandRange(a,b).map(r=>val(r,visiting)).join("+") + ")";
+    });
+    expr = expr.replace(/[A-Z]+\d+/g, r => "("+val(r,visiting)+")");
+    if(!/^[\d\s.+\-*/()]+$/.test(expr)) throw {bad:true};
+    visiting.delete(ref);
+    const out = Function('"use strict";return('+expr+')')();
+    if(typeof out !== "number" || !isFinite(out)) throw {bad:true};
+    return out;
+  }
+  function display(ref){
+    const cell = state[ref];
+    if(!cell) return "";
+    if(cell.raw==="") return "";
+    try{
+      const v = val(ref);
+      if(cell.raw.trim()[0]!=="=" && isNaN(Number(cell.raw.replace(/,/g,"")))) return cell.raw; // text
+      return fmt(v);
+    }catch(e){ return e.cyc ? "#CYCLE" : "#ERROR"; }
+  }
+  function num(ref){ try{ return val(ref); }catch(e){ return NaN; } }
+  return { state, display, num };
+}
+function fmt(n){
+  const neg = n < 0;
+  const r = Math.round(Math.abs(n)*100)/100;
+  const s = r.toLocaleString("en-IN",{maximumFractionDigits:2});
+  return neg ? "("+s+")" : s;
+}
+
+/* ---------- lesson data ---------- */
+const COMPANY = "Bombay Bean Coffee Co.";
+const LESSONS = [
+{ id:"home", code:"", short:"Start here", module:null },
+
+{ id:"eq", code:"1010", module:"1000 · FOUNDATIONS", short:"The accounting equation",
+  title:"The accounting equation",
+  body: `
+  <p class="lede">Every balance sheet ever published rests on one identity. Learn it once and half of accounting becomes bookkeeping detail.</p>
+  <div class="formula">Assets  =  Liabilities  +  Equity</div>
+  <p><strong>Assets</strong> are what the business owns or controls. <strong>Liabilities</strong> are what it owes to outsiders. <strong>Equity</strong> is what's left for the owners after outsiders are paid — which is why it's also called <em>net worth</em> or <em>owners' funds</em>.</p>
+  <div class="defcard"><div class="lbl">Why it always balances</div>
+  Every rupee of assets was financed by someone: either a lender (liability) or an owner (equity). The equation isn't a rule you enforce — it's an identity that's true by construction. If your balance sheet doesn't balance, you've made an arithmetic error, not discovered an exception.</div>
+  <div class="example"><div class="lbl">Real-life example · ${COMPANY}</div>
+  A small café in Andheri owns assets worth ₹8,00,000 — an espresso machine, furniture, inventory, cash. It borrowed ₹3,00,000 from a bank. How much of the café do the owners actually "own"? Rearrange the identity: <span class="kbd">Equity = Assets − Liabilities</span>.</div>`,
+  sandbox: {
+    caption:"Sheet 1 · The identity",
+    task:"Write a formula in B4 to compute Equity.",
+    cols:["A","B"],
+    rows:4,
+    cells:{
+      A1:{v:"Item",locked:true,cls:"lab"}, B1:{v:"₹",locked:true,cls:"lab"},
+      A2:{v:"Total assets",locked:true,cls:"lab"}, B2:{v:"800000",locked:true,cls:"num"},
+      A3:{v:"Total liabilities",locked:true,cls:"lab"}, B3:{v:"300000",locked:true,cls:"num"},
+      A4:{v:"Equity",locked:true,cls:"lab"}, B4:{v:"",cls:"num inputcell",input:true}
+    },
+    checks:[{cell:"B4",expect:500000,mustFormula:true}],
+    hint:"Click B4, then type <b>=B2-B3</b> in the formula bar and press Enter. Formulas always start with '='."
+  },
+  quiz:{q:"A business buys a ₹2,00,000 machine entirely with a bank loan. What happens to equity?",
+    opts:["Equity rises by ₹2,00,000","Equity falls by ₹2,00,000","Equity is unchanged"],
+    ans:2, expl:"Assets rise by 2,00,000 and liabilities rise by 2,00,000. The equation stays balanced with no change in equity — debt-funded assets don't make the owners richer."}
+},
+
+{ id:"asset", code:"1020", module:"1000 · FOUNDATIONS", short:"What is an asset?",
+  title:"What is an asset?",
+  body: `
+  <p class="lede">"Asset" has a precise meaning — and it isn't "anything valuable."</p>
+  <div class="defcard"><div class="lbl">Definition</div>
+  An asset is a resource <strong>controlled</strong> by the business, arising from <strong>past events</strong>, from which <strong>future economic benefit</strong> is expected to flow. All three tests must pass.</div>
+  <p>Assets split into two families on the balance sheet:</p>
+  <p><strong>Current assets</strong> — expected to convert to cash within 12 months: cash itself, trade receivables (customers who owe you), inventory.</p>
+  <p><strong>Non-current assets</strong> — held to run the business for years: property, plant &amp; equipment (PP&amp;E), long-term investments, intangibles.</p>
+  <div class="example"><div class="lbl">Real-life example · ${COMPANY}</div>
+  The café's espresso machine passes all three tests: the café controls it, bought it in the past, and it will produce sellable coffee for years → non-current asset. The barista, however talented, fails the control test — the café doesn't own people. Employees are never assets in accounting.</div>
+  <p>Classify each item below. This is exactly the judgement you apply on every line of a real balance sheet.</p>`,
+  classify:{
+    buttons:["Current asset","Non-current asset","Not an asset"],
+    items:[
+      {t:"Cash in the till", a:0, why:"Already cash — the most current asset there is."},
+      {t:"Espresso machine (8-year life)", a:1, why:"Used to operate for years → PP&E, non-current."},
+      {t:"Coffee beans in the storeroom", a:0, why:"Inventory: expected to be sold within months."},
+      {t:"₹9,00,000 owed by a corporate client", a:0, why:"A trade receivable — cash expected within the year."},
+      {t:"The head barista", a:2, why:"No control: the business doesn't own its people. Never an asset."},
+      {t:"Bank loan of ₹8,00,000", a:2, why:"That's money the café owes — a liability, the other side of the equation."}
+    ]
+  },
+  quiz:{q:"Prepaid rent (rent paid in advance for next quarter) is —",
+    opts:["An expense, not an asset","A current asset","A liability"],
+    ans:1, expl:"You've paid for a future benefit (the right to occupy the space). Until that benefit is consumed, it sits as a current asset called prepaid expenses."}
+},
+
+{ id:"ppe", code:"1110", module:"1100 · ASSETS", short:"PP&E and depreciation",
+  title:"PP&E: where the number comes from",
+  body: `
+  <p class="lede">The PP&amp;E line on a balance sheet is never just "what we paid." It's cost, worn down by use.</p>
+  <div class="formula">Annual depreciation (straight-line) = (Cost − Salvage value) ÷ Useful life
+Net PP&E = Gross block − Accumulated depreciation</div>
+  <p><strong>Gross block</strong> is the original cost of the asset. <strong>Depreciation</strong> spreads that cost over the years the asset works — it's an allocation of cost, <em>not</em> a measure of market value. <strong>Accumulated depreciation</strong> is all the depreciation charged so far. What remains — <strong>net PP&amp;E</strong> — is what appears on the balance sheet.</p>
+  <div class="example"><div class="lbl">Real-life example · ${COMPANY}</div>
+  The café bought a delivery van for ₹12,00,000. Useful life: 8 years. Salvage value: ₹0. It has now been running for <strong>3 years</strong>. Build the schedule below — this exact structure (cost → dep/yr → accumulated → net) is how a fixed-asset schedule works inside every real financial model.</div>`,
+  sandbox:{
+    caption:"Sheet 2 · Fixed asset schedule",
+    task:"Write formulas in B5, B7 and B8.",
+    cols:["A","B"],
+    rows:8,
+    cells:{
+      A1:{v:"Fixed asset schedule",locked:true,cls:"lab"}, B1:{v:"₹",locked:true,cls:"lab"},
+      A2:{v:"Cost (gross block)",locked:true,cls:"lab"}, B2:{v:"1200000",locked:true,cls:"num"},
+      A3:{v:"Useful life (years)",locked:true,cls:"lab"}, B3:{v:"8",locked:true,cls:"num"},
+      A4:{v:"Salvage value",locked:true,cls:"lab"}, B4:{v:"0",locked:true,cls:"num"},
+      A5:{v:"Depreciation per year",locked:true,cls:"lab"}, B5:{v:"",cls:"num inputcell",input:true},
+      A6:{v:"Years elapsed",locked:true,cls:"lab"}, B6:{v:"3",locked:true,cls:"num"},
+      A7:{v:"Accumulated depreciation",locked:true,cls:"lab"}, B7:{v:"",cls:"num inputcell",input:true},
+      A8:{v:"Net PP&E  →  balance sheet",locked:true,cls:"lab"}, B8:{v:"",cls:"num inputcell total",input:true}
+    },
+    checks:[
+      {cell:"B5",expect:150000,mustFormula:true},
+      {cell:"B7",expect:450000,mustFormula:true},
+      {cell:"B8",expect:750000,mustFormula:true}
+    ],
+    hint:"B5: <b>=(B2-B4)/B3</b> · B7: <b>=B5*B6</b> · B8: <b>=B2-B7</b>. Chain formulas off earlier cells — never hardcode a number you can derive."
+  },
+  quiz:{q:"After year 8, the van still runs fine. Its net PP&E on the balance sheet is —",
+    opts:["Whatever a buyer would pay","₹0 (fully depreciated)","₹1,50,000"],
+    ans:1, expl:"Book value hits zero once cost is fully allocated. The balance sheet shows depreciated cost, not market value — a key reason book value ≠ what a company is worth."}
+},
+
+{ id:"wc", code:"1120", module:"1100 · ASSETS", short:"Receivables & inventory",
+  title:"Working capital: receivables",
+  body:`
+  <p class="lede">Sell today, get paid in 45 days — the gap lives on your balance sheet as trade receivables.</p>
+  <div class="formula">Trade receivables = (Annual revenue ÷ 365) × Days Sales Outstanding (DSO)</div>
+  <p><strong>DSO</strong> is the average number of days customers take to pay. Rearranged, it's also how analysts <em>estimate</em> receivables in a forecast: daily revenue × collection days. Inventory works identically with <strong>DIO</strong> (days inventory outstanding) applied to cost of goods sold.</p>
+  <div class="example"><div class="lbl">Real-life example · ${COMPANY}</div>
+  The café signed a corporate catering contract. Annual revenue is now ₹73,00,000 and corporate clients pay on 45-day terms. How much cash is stuck in receivables at any point in time?</div>`,
+  sandbox:{
+    caption:"Sheet 3 · Receivables build-up",
+    task:"Write a formula in B4.",
+    cols:["A","B"],
+    rows:4,
+    cells:{
+      A1:{v:"Working capital",locked:true,cls:"lab"}, B1:{v:"₹ / days",locked:true,cls:"lab"},
+      A2:{v:"Annual revenue",locked:true,cls:"lab"}, B2:{v:"7300000",locked:true,cls:"num"},
+      A3:{v:"DSO (days)",locked:true,cls:"lab"}, B3:{v:"45",locked:true,cls:"num"},
+      A4:{v:"Trade receivables  →  balance sheet",locked:true,cls:"lab"}, B4:{v:"",cls:"num inputcell total",input:true}
+    },
+    checks:[{cell:"B4",expect:900000,mustFormula:true}],
+    hint:"B4: <b>=B2/365*B3</b>. Daily revenue of ₹20,000 × 45 days of waiting = ₹9,00,000 locked up."
+  },
+  quiz:{q:"If DSO rises from 45 to 60 days with revenue unchanged, the business —",
+    opts:["Earns more profit","Needs more cash to fund operations","Owes suppliers more"],
+    ans:1, expl:"More money sits unpaid with customers. Profit is untouched but cash is consumed — the classic reason profitable companies still run out of cash."}
+},
+
+{ id:"liab", code:"1210", module:"1200 · LIABILITIES & EQUITY", short:"Payables & debt",
+  title:"Liabilities: payables and debt",
+  body:`
+  <p class="lede">Liabilities mirror assets: some fall due within the year, some later. Two dominate a small company's balance sheet.</p>
+  <p><strong>Trade payables</strong> — the mirror image of receivables: money you owe suppliers. Estimated the same way, from <strong>DPO</strong> (days payable outstanding) applied to annual purchases.</p>
+  <p><strong>Borrowings (debt)</strong> — tracked with a debt schedule: opening balance, minus repayments, equals closing balance. The closing number is what the balance sheet shows.</p>
+  <div class="formula">Trade payables = (Annual purchases ÷ 365) × DPO
+Closing debt = Opening debt − Repayments (+ new drawdowns)</div>
+  <div class="example"><div class="lbl">Real-life example · ${COMPANY}</div>
+  The café buys ₹36,50,000 of beans, milk and packaging a year and pays suppliers on 40-day terms. It also started the year with a ₹10,00,000 bank loan and repaid ₹2,00,000 during the year.</div>`,
+  sandbox:{
+    caption:"Sheet 4 · Payables + debt schedule",
+    task:"Write formulas in B4 and B8.",
+    cols:["A","B"],
+    rows:8,
+    cells:{
+      A1:{v:"Trade payables",locked:true,cls:"lab"}, B1:{v:"₹ / days",locked:true,cls:"lab"},
+      A2:{v:"Annual purchases",locked:true,cls:"lab"}, B2:{v:"3650000",locked:true,cls:"num"},
+      A3:{v:"DPO (days)",locked:true,cls:"lab"}, B3:{v:"40",locked:true,cls:"num"},
+      A4:{v:"Trade payables  →  balance sheet",locked:true,cls:"lab"}, B4:{v:"",cls:"num inputcell total",input:true},
+      A5:{v:"",locked:true,cls:"lab"}, B5:{v:"",locked:true,cls:"lab"},
+      A6:{v:"Opening debt",locked:true,cls:"lab"}, B6:{v:"1000000",locked:true,cls:"num"},
+      A7:{v:"Repayment during year",locked:true,cls:"lab"}, B7:{v:"200000",locked:true,cls:"num"},
+      A8:{v:"Closing debt  →  balance sheet",locked:true,cls:"lab"}, B8:{v:"",cls:"num inputcell total",input:true}
+    },
+    checks:[
+      {cell:"B4",expect:400000,mustFormula:true},
+      {cell:"B8",expect:800000,mustFormula:true}
+    ],
+    hint:"B4: <b>=B2/365*B3</b> · B8: <b>=B6-B7</b>. A debt schedule is just a running balance — opening, movements, closing."
+  },
+  quiz:{q:"Stretching supplier payments from 40 to 55 days does what to cash?",
+    opts:["Releases cash into the business","Consumes cash","No effect — it's not revenue"],
+    ans:0, expl:"You hold suppliers' money longer. Higher DPO is a source of free financing — which is why working-capital management is a cash lever, not an accounting nicety."}
+},
+
+{ id:"re", code:"1220", module:"1200 · LIABILITIES & EQUITY", short:"Equity & retained earnings",
+  title:"Equity: the retained earnings roll-forward",
+  body:`
+  <p class="lede">Equity has two main parts: what owners put in, and what the business earned and kept.</p>
+  <p><strong>Share capital</strong> — cash the owners invested to start or grow the company. It only changes when new shares are issued or bought back.</p>
+  <p><strong>Retained earnings</strong> — the accumulated profit the business has kept rather than paid out. It moves every year by a simple roll-forward, and this one line is the bridge that connects the income statement to the balance sheet:</p>
+  <div class="formula">Closing retained earnings = Opening RE + Profit after tax − Dividends</div>
+  <div class="example"><div class="lbl">Real-life example · ${COMPANY}</div>
+  The café began the year with ₹4,00,000 of retained earnings, earned a profit after tax of ₹1,80,000, and paid the owners a ₹30,000 dividend. Roll the balance forward.</div>`,
+  sandbox:{
+    caption:"Sheet 5 · Retained earnings roll-forward",
+    task:"Write a formula in B5.",
+    cols:["A","B"],
+    rows:5,
+    cells:{
+      A1:{v:"Retained earnings",locked:true,cls:"lab"}, B1:{v:"₹",locked:true,cls:"lab"},
+      A2:{v:"Opening balance",locked:true,cls:"lab"}, B2:{v:"400000",locked:true,cls:"num"},
+      A3:{v:"Profit after tax (from P&L)",locked:true,cls:"lab"}, B3:{v:"180000",locked:true,cls:"num"},
+      A4:{v:"Dividends paid",locked:true,cls:"lab"}, B4:{v:"30000",locked:true,cls:"num"},
+      A5:{v:"Closing RE  →  balance sheet",locked:true,cls:"lab"}, B5:{v:"",cls:"num inputcell total",input:true}
+    },
+    checks:[{cell:"B5",expect:550000,mustFormula:true}],
+    hint:"B5: <b>=B2+B3-B4</b>. In a full 3-statement model, B3 links live to the income statement — this roll-forward is that link."
+  },
+  quiz:{q:"Retained earnings of ₹5,50,000 means the company has —",
+    opts:["₹5,50,000 of cash set aside","Kept ₹5,50,000 of cumulative profit in the business","₹5,50,000 it must pay shareholders"],
+    ans:1, expl:"RE is a claim, not a cash pile. The profits kept may already be sitting in vans, inventory or receivables. Cash is its own line."}
+},
+
+{ id:"capstone", code:"1310", module:"1300 · CAPSTONE", short:"Build the balance sheet", 
+  title:"Capstone: assemble the balance sheet",
+  body:`
+  <p class="lede">Every number below is one you calculated yourself in the last five lessons. Now put them together — and prove the identity from Lesson 1 with your own hands.</p>
+  <span class="badge-store">Cash ₹1,00,000 · Inventory ₹2,00,000 · Share capital ₹2,00,000 are given</span>
+  <p>Your job: fill in the four values you derived earlier (receivables, net PP&amp;E, payables, closing debt, closing RE) as <em>numbers or formulas</em>, then write the three <span class="kbd">SUM</span> formulas for the totals. The tie meter tracks <strong>Assets − (Liabilities + Equity)</strong> live. You're done when it reads exactly zero.</p>
+  <div class="defcard"><div class="lbl">Why this matters</div>
+  A DRHP, an audit file, a credit memo, an LBO model — they all end the same way: a balance sheet that ties. "Does it tie?" is the first question anyone asks of a model. Making it tie yourself, once, teaches more than reading ten textbook chapters.</div>`,
+  sandbox:{
+    caption:"Sheet 6 · Balance sheet — " + COMPANY,
+    task:"Fill the blanks; make the tie check read 0.",
+    cols:["A","B"],
+    rows:16,
+    tie:{a:"B7", le:"B15"},
+    cells:{
+      A1:{v:"ASSETS",locked:true,cls:"lab"}, B1:{v:"₹",locked:true,cls:"lab"},
+      A2:{v:"Cash",locked:true,cls:"lab"}, B2:{v:"100000",locked:true,cls:"num"},
+      A3:{v:"Trade receivables",locked:true,cls:"lab"}, B3:{v:"",cls:"num inputcell",input:true},
+      A4:{v:"Inventory",locked:true,cls:"lab"}, B4:{v:"200000",locked:true,cls:"num"},
+      A5:{v:"Net PP&E",locked:true,cls:"lab"}, B5:{v:"",cls:"num inputcell",input:true},
+      A6:{v:"",locked:true,cls:"lab"}, B6:{v:"",locked:true,cls:"lab"},
+      A7:{v:"TOTAL ASSETS",locked:true,cls:"lab"}, B7:{v:"",cls:"num inputcell total",input:true},
+      A8:{v:"LIABILITIES",locked:true,cls:"lab"}, B8:{v:"",locked:true,cls:"lab"},
+      A9:{v:"Trade payables",locked:true,cls:"lab"}, B9:{v:"",cls:"num inputcell",input:true},
+      A10:{v:"Borrowings",locked:true,cls:"lab"}, B10:{v:"",cls:"num inputcell",input:true},
+      A11:{v:"EQUITY",locked:true,cls:"lab"}, B11:{v:"",locked:true,cls:"lab"},
+      A12:{v:"Share capital",locked:true,cls:"lab"}, B12:{v:"200000",locked:true,cls:"num"},
+      A13:{v:"Retained earnings",locked:true,cls:"lab"}, B13:{v:"",cls:"num inputcell",input:true},
+      A14:{v:"",locked:true,cls:"lab"}, B14:{v:"",locked:true,cls:"lab"},
+      A15:{v:"TOTAL LIABILITIES + EQUITY",locked:true,cls:"lab"}, B15:{v:"",cls:"num inputcell total",input:true},
+      A16:{v:"Tie check (should be 0)",locked:true,cls:"lab"}, B16:{v:"",cls:"num inputcell",input:true}
+    },
+    checks:[
+      {cell:"B3",expect:900000},
+      {cell:"B5",expect:750000},
+      {cell:"B7",expect:1950000,mustFormula:true},
+      {cell:"B9",expect:400000},
+      {cell:"B10",expect:800000},
+      {cell:"B13",expect:550000},
+      {cell:"B15",expect:1950000,mustFormula:true},
+      {cell:"B16",expect:0,mustFormula:true}
+    ],
+    hint:"Values from earlier sheets: receivables 9,00,000 · net PP&E 7,50,000 · payables 4,00,000 · debt 8,00,000 · RE 5,50,000. Totals: B7 <b>=SUM(B2:B5)</b> · B15 <b>=B9+B10+B12+B13</b> · tie B16 <b>=B7-B15</b>."
+  },
+  quiz:{q:"Your model's balance sheet is off by exactly the year's depreciation. The most likely culprit —",
+    opts:["Depreciation reduced PP&E but was never routed through retained earnings via the P&L","Dividends were double-counted","DSO is wrong"],
+    ans:0, expl:"Classic 3-statement bug: an expense must hit both sides — reduce the asset AND reduce profit (hence RE). Touch one side only and the sheet breaks by that amount."}
+},
+
+{ id:"next", code:"2010", module:"2000 · WHAT'S NEXT", short:"Toward full modeling",
+  title:"From one statement to a full model",
+  body:`
+  <p class="lede">You just built a balance sheet from first principles. A full financial model is the same discipline, three statements deep, projected forward in time.</p>
+  <div class="pathline">
+    <div class="step"><div class="c">2100</div><div class="t">The income statement</div><div class="d">Revenue drivers → costs → EBITDA → depreciation (you know this one) → PAT.</div></div>
+    <div class="step"><div class="c">2200</div><div class="t">The cash flow statement</div><div class="d">Derived, not invented: PAT + non-cash items ± working-capital moves (DSO/DPO — you know these too).</div></div>
+    <div class="step"><div class="c">2300</div><div class="t">Linking all three</div><div class="d">PAT → retained earnings. Depreciation → PP&E. Closing cash → balance sheet. The tie check goes live across time.</div></div>
+    <div class="step"><div class="c">2400</div><div class="t">Valuation & modeling</div><div class="d">Free cash flow, DCF, scenarios — everything downstream of statements that tie.</div></div>
+  </div>
+  <p>This build is the v1 skeleton: the lesson engine, the spreadsheet engine, and the check system are all in place. Adding a module is just adding a data object — no new code. The curriculum above is the roadmap.</p>
+  <p class="note">Built as a static single file. Fork it, push to GitHub Pages, and it's live. Every lesson is a JS object in this page's source — open it and see.</p>`
+}
+];
+
+/* ---------- app state ---------- */
+const done = new Set();           // in-memory progress (add persistence when self-hosting)
+let current = "home";
+const sheets = {};                // live sheet instances per lesson
+
+/* ---------- sidebar ---------- */
+function renderSidebar(){
+  const el = document.getElementById("sidebar");
+  let html = "";
+  let lastMod = null;
+  html += `<div class="mod"><a class="lesson-link ${current==='home'?'active':''}" onclick="go('home')"><span class="dot" style="border-style:dashed"></span>Start here</a></div>`;
+  for(const L of LESSONS){
+    if(!L.module) continue;
+    if(L.module !== lastMod){
+      const [code,...name] = L.module.split("·");
+      html += `<div class="mod"><div class="mod-head"><span class="mod-code">${code.trim()}</span><span class="mod-name">${name.join("·").trim()}</span></div>`;
+      lastMod = L.module;
+    }
+    html += `<a class="lesson-link ${current===L.id?'active':''} ${done.has(L.id)?'done':''}" onclick="go('${L.id}')"><span class="dot"></span>${L.short}</a>`;
+  }
+  html += `</div><div class="foot">Progress lives in this session. Sign-in, streaks and saved sheets are on the roadmap.</div>`;
+  el.innerHTML = html;
+  document.getElementById("progressPill").textContent =
+    done.size + " / " + LESSONS.filter(l=>l.module).length + " complete";
+}
+
+/* ---------- lesson rendering ---------- */
+function go(id){
+  current = id;
+  document.getElementById("sidebar").classList.remove("open");
+  renderSidebar();
+  const main = document.getElementById("main");
+  if(id === "home"){ main.innerHTML = homeHTML(); window.scrollTo(0,0); return; }
+  const idx = LESSONS.findIndex(l=>l.id===id);
+  const L = LESSONS[idx];
+  let html = `<div class="crumb">${L.module} · LESSON ${L.code}</div><h1>${L.title}</h1>${L.body}`;
+
+  if(L.sandbox){
+    html += `<h2>Try it yourself</h2>
+      <p>${L.sandbox.task} Click a cell, type in the formula bar, press <span class="kbd">Enter</span>.</p>
+      <button class="trybtn" onclick="openSandbox('${L.id}')" id="tb-${L.id}">▦&nbsp; Open the sheet</button>
+      <div class="sandbox" id="sb-${L.id}" hidden></div>`;
+  }
+  if(L.classify) html += renderClassify(L);
+  if(L.quiz) html += renderQuiz(L, idx);
+  html += pagerHTML(idx);
+  main.innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+function pagerHTML(idx){
+  const prev = idx > 1 ? LESSONS[idx-1] : null;
+  const next = idx < LESSONS.length-1 ? LESSONS[idx+1] : null;
+  return `<div class="pager">
+    ${prev?`<button onclick="go('${prev.id}')"><b>❮ Previous</b>${prev.short}</button>`:`<button onclick="go('home')"><b>❮ Back</b>Start here</button>`}
+    ${next?`<button class="next" onclick="go('${next.id}')"><b>Next ❯</b>${next.short}</button>`:""}
+  </div>`;
+}
+
+/* ---------- sandbox ---------- */
+function openSandbox(id){
+  const L = LESSONS.find(l=>l.id===id);
+  const box = document.getElementById("sb-"+id);
+  document.getElementById("tb-"+id).style.display = "none";
+  if(!sheets[id]) sheets[id] = makeSheet(L.sandbox);
+  const sh = sheets[id];
+  const cols = L.sandbox.cols, rows = L.sandbox.rows;
+
+  let grid = `<table class="grid"><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`;
+  for(let r=1;r<=rows;r++){
+    grid += `<tr><th>${r}</th>`;
+    for(const c of cols){
+      const ref = c+r, meta = (L.sandbox.cells[ref]||{});
+      const cls = (meta.cls||"") + (meta.locked?" locked":"");
+      grid += `<td id="c-${id}-${ref}" class="${cls}" data-ref="${ref}" data-lesson="${id}" onclick="selectCell('${id}','${ref}')"></td>`;
+    }
+    grid += "</tr>";
+  }
+  grid += "</table>";
+
+  box.innerHTML = `
+    <div class="sb-head"><span class="sb-title">${L.sandbox.caption}</span><span class="task">${L.sandbox.task}</span></div>
+    <div class="fbar">
+      <span class="cellref" id="ref-${id}">—</span><span class="fx">fx</span>
+      <input id="fin-${id}" placeholder="Select an editable cell, then type a value or =formula" autocomplete="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter'){commit('${id}')}">
+    </div>
+    <div class="gridwrap">${grid}</div>
+    ${L.sandbox.tie?`<div style="padding:0 14px"><div class="tiemeter" id="tie-${id}"><span class="val">—</span><span class="cap">Assets − (Liabilities + Equity). Zero means your balance sheet ties.</span></div></div>`:""}
+    <div class="sb-foot">
+      <button class="checkbtn" onclick="checkSheet('${id}')">Check my sheet</button>
+      <button class="resetbtn" onclick="resetSheet('${id}')">Reset</button>
+      <span class="feedback" id="fb-${id}"></span>
+      <button class="hinttog" onclick="document.getElementById('hint-${id}').classList.toggle('show')">Hint</button>
+    </div>
+    <div class="hintbox" id="hint-${id}">${L.sandbox.hint}</div>`;
+  box.hidden = false;
+  refreshGrid(id);
+}
+
+let sel = {};   // per-lesson selected cell
+function selectCell(id, ref){
+  const L = LESSONS.find(l=>l.id===id);
+  const meta = L.sandbox.cells[ref]||{};
+  document.querySelectorAll(`[data-lesson="${id}"].sel`).forEach(e=>e.classList.remove("sel"));
+  const td = document.getElementById(`c-${id}-${ref}`);
+  td.classList.add("sel");
+  sel[id] = ref;
+  document.getElementById("ref-"+id).textContent = ref;
+  const inp = document.getElementById("fin-"+id);
+  inp.value = sheets[id].state[ref] ? sheets[id].state[ref].raw : "";
+  inp.disabled = !!meta.locked || !meta.input;
+  inp.placeholder = meta.locked || !meta.input ? "This cell is given — pick a highlighted cell" : "Type a value or =formula, then Enter";
+  if(!inp.disabled) inp.focus();
+}
+function commit(id){
+  const ref = sel[id]; if(!ref) return;
+  const sh = sheets[id];
+  if(!sh.state[ref]) sh.state[ref] = {raw:"",meta:{}};
+  sh.state[ref].raw = document.getElementById("fin-"+id).value.trim();
+  refreshGrid(id);
+  document.getElementById("fb-"+id).textContent = "";
+}
+function refreshGrid(id){
+  const L = LESSONS.find(l=>l.id===id);
+  const sh = sheets[id];
+  for(const ref in L.sandbox.cells){
+    const td = document.getElementById(`c-${id}-${ref}`);
+    if(td) td.textContent = sh.display(ref);
+  }
+  if(L.sandbox.tie){
+    const a = sh.num(L.sandbox.tie.a), le = sh.num(L.sandbox.tie.le);
+    const m = document.getElementById("tie-"+id);
+    if(m){
+      const diff = (isNaN(a)||isNaN(le)) ? NaN : a-le;
+      m.querySelector(".val").textContent = isNaN(diff) ? "—" : fmt(diff);
+      m.classList.toggle("tied", diff===0 && !isNaN(diff) && a!==0);
+      m.classList.toggle("off", diff!==0 && !isNaN(diff));
+    }
+  }
+}
+function checkSheet(id){
+  const L = LESSONS.find(l=>l.id===id);
+  const sh = sheets[id];
+  let pass = 0, total = L.sandbox.checks.length, formulaMiss = false;
+  for(const ch of L.sandbox.checks){
+    const td = document.getElementById(`c-${id}-${ch.cell}`);
+    const v = sh.num(ch.cell);
+    const raw = (sh.state[ch.cell]?sh.state[ch.cell].raw:"").trim();
+    const okVal = !isNaN(v) && Math.abs(v - ch.expect) < 1;
+    const okForm = !ch.mustFormula || raw.startsWith("=");
+    td.classList.remove("ok","bad");
+    if(okVal && okForm){ td.classList.add("ok"); pass++; }
+    else { td.classList.add("bad"); if(okVal && !okForm) formulaMiss = true; }
+  }
+  const fb = document.getElementById("fb-"+id);
+  if(pass === total){
+    fb.textContent = "✓ Correct — sheet complete. Marked as done.";
+    fb.className = "feedback good";
+    done.add(id); renderSidebar();
+  } else {
+    fb.textContent = formulaMiss
+      ? `${pass}/${total} — right number, but use a formula (start with =), don't hardcode.`
+      : `${pass}/${total} correct — red cells need another look.`;
+    fb.className = "feedback badf";
+  }
+}
+function resetSheet(id){
+  delete sheets[id];
+  openSandbox(id);
+}
+
+/* ---------- classify exercise ---------- */
+function renderClassify(L){
+  let h = `<h2>Try it yourself</h2><div class="classify">`;
+  L.classify.items.forEach((it,i)=>{
+    h += `<div class="chip" id="ch-${L.id}-${i}"><span class="item">${it.t}</span>`;
+    L.classify.buttons.forEach((b,bi)=>{
+      h += `<button onclick="classifyPick('${L.id}',${i},${bi})">${b}</button>`;
+    });
+    h += `<span class="why">${it.why}</span></div>`;
+  });
+  return h + "</div>";
+}
+function classifyPick(id,i,bi){
+  const L = LESSONS.find(l=>l.id===id);
+  const chip = document.getElementById(`ch-${id}-${i}`);
+  chip.querySelectorAll("button").forEach((b,k)=>b.classList.toggle("pick",k===bi));
+  const right = L.classify.items[i].a === bi;
+  chip.classList.toggle("right", right);
+  chip.classList.toggle("wrong", !right);
+  const allRight = L.classify.items.every((it,k)=>
+    document.getElementById(`ch-${id}-${k}`).classList.contains("right"));
+  if(allRight){ done.add(id); renderSidebar(); }
+}
+
+/* ---------- quiz ---------- */
+function renderQuiz(L, idx){
+  return `<div class="quiz"><div class="qlbl">Check yourself</div><div class="qq">${L.quiz.q}</div>
+    ${L.quiz.opts.map((o,i)=>`<button class="opt" onclick="answer('${L.id}',${i},this)">${o}</button>`).join("")}
+    <div class="expl" id="ex-${L.id}">${L.quiz.expl}</div></div>`;
+}
+function answer(id,i,btn){
+  const L = LESSONS.find(l=>l.id===id);
+  btn.parentElement.querySelectorAll(".opt").forEach((b,k)=>{
+    b.classList.remove("right","wrong");
+    if(k===L.quiz.ans) b.classList.add("right");
+  });
+  if(i!==L.quiz.ans) btn.classList.add("wrong");
+  document.getElementById("ex-"+id).classList.add("show");
+}
+
+/* ---------- home ---------- */
+function homeHTML(){
+  return `
+  <div class="crumb">A FREE COURSE · NO SIGN-UP · NO VIDEOS</div>
+  <h1>Learn finance the way it's built.</h1>
+  <p class="lede">Tiny lessons. A live spreadsheet in your browser. One small company whose balance sheet you assemble line by line — and prove that it ties.</p>
+  <div class="hero-eq"><span class="a">Assets</span> = <span class="l">Liabilities</span> + <span class="e">Equity</span></div>
+  <div class="hero-sub">// the only formula you need before Lesson 1</div>
+  <p>Most finance courses talk <em>about</em> statements. Here you build one. Every concept — depreciation, receivables, retained earnings — is a five-minute page ending in a sheet where you write the actual formula. By the final lesson you've computed every line of a real balance sheet yourself.</p>
+  <div class="pathline">
+    <div class="step"><div class="c">1000 FOUNDATIONS</div><div class="t">The equation & what counts as an asset</div></div>
+    <div class="step"><div class="c">1100 ASSETS</div><div class="t">PP&E, depreciation, receivables</div></div>
+    <div class="step"><div class="c">1200 LIABILITIES & EQUITY</div><div class="t">Payables, debt schedules, retained earnings</div></div>
+    <div class="step"><div class="c">1300 CAPSTONE</div><div class="t">Assemble the full balance sheet — and make it tie</div></div>
+  </div>
+  <button class="trybtn" onclick="go('eq')">Start Lesson 1010 ❯</button>
+  <p class="note">Built in the spirit of W3Schools: read a little, try it immediately. Works on any laptop — nothing to install, nothing to watch.</p>`;
+}
+
+/* ---------- boot ---------- */
+document.getElementById("menuBtn").addEventListener("click",()=>{
+  document.getElementById("sidebar").classList.toggle("open");
+});
+renderSidebar();
+go("home");
+</script>
+</body>
+</html>
