@@ -1,5 +1,6 @@
 # LedgerSchool
 
+
 **Learn finance by building it.** A free, text-only, W3Schools-style site that teaches
 accounting, the three financial statements, ratios and financial modeling by making you
 implement every concept immediately in a live in-browser spreadsheet — with formula
