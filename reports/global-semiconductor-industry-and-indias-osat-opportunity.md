@@ -102,6 +102,7 @@ The strategic logic of starting with **OSAT/ATMP** (assembly, testing, marking a
 Ten of India's twelve approved ISM 1.0 projects are packaging/ATMP/OSAT or specialty units, not leading-edge fabs. That is not a weakness; it is the same sequencing Taiwan, Malaysia, Singapore and China used — enter at assembly and test, build operational credibility, move up the value curve. Sections 7–9 examine whether India — and bellwether first movers such as Tata, Micron, Kaynes, CG Power and Suchi Semicon — can repeat that playbook.
 
 ---
+
 # SECTION 2: INTRODUCTION TO SEMICONDUCTORS
 
 *This section assumes no engineering background. Each concept is explained simply first, then given a more advanced treatment.*
@@ -225,6 +226,7 @@ Wire two transistors together and you get a logic gate (NAND, NOR); wire a few b
 Two practical observations matter for the rest of this report. First, **different chip families need different manufacturing**: leading-edge logic needs EUV lithography and $20 billion fabs; analog, power and many automotive chips are built profitably on mature nodes (28 nm–180 nm+) in far cheaper fabs — which is exactly the tier India's first fab (Tata–PSMC, 28–110 nm) targets. Second, **every one of these chips, whatever its family, must be packaged and tested** — the universal downstream step that is the OSAT industry's business, and India's entry point.
 
 ---
+
 # SECTION 3: THE COMPLETE SEMICONDUCTOR VALUE CHAIN
 
 No industry on earth has a longer or more specialised value chain. A single chip crosses **70+ international borders** before reaching a consumer. The chain can be read as six industrial layers plus the downstream electronics system layer.
@@ -413,6 +415,7 @@ Five firms sell ~70% of the world's wafer-fab equipment (WFE market ~$110–120 
 Equipment is the tollbooth on the global subsidy race: whoever builds fabs — America, Japan, India or China — pays this handful of firms. US, Japanese and Dutch export controls on this layer are the primary instrument capping China's leading-edge progress; China responded by stockpiling DUV tools (ASML's China revenue share spiked ~40%+ in 2023–24) and pouring Big Fund III money into domestic toolmakers (Naura, AMEC, SMEE).
 
 ---
+
 # SECTION 4: DEEP DIVE — THE OSAT INDUSTRY
 
 *This is the report's core section. OSAT is where chips become usable products, where the AI boom's binding constraint now sits, and where India's semiconductor strategy concentrates.*
@@ -633,6 +636,7 @@ EBITDA                                        ████████ 20–26%
 The financial character of OSAT, stated plainly for a credit committee: **a volume-driven industrial converter with 20–25% EBITDA, high operating leverage (utilisation is everything), 7–8-year asset lives requiring perpetual reinvestment, negative-to-neutral working capital possible on consignment-material models, and returns that clear hurdle rates in India only because incentives absorb half or more of the capex.** The bull case is not the first plant's spreadsheet; it is what the first plant buys — customer qualifications, a trained workforce, and the option on each next rung of the packaging ladder (Section 9).
 
 ---
+
 # SECTION 5: GLOBAL SEMICONDUCTOR MARKET STRUCTURE — SELLERS AND BUYERS AT EVERY STAGE
 
 A finance professional's map of the industry is a map of **who sells to whom, and how concentrated each node is**. The Herfindahl–Hirschman Index (HHI — the sum of squared market shares; >2,500 = highly concentrated) is rarely published for these niches, so the tables below give computed/estimated HHI bands from the share data cited in Section 3. The pattern is unmistakable: **almost every stage of this chain is a concentrated oligopoly or monopoly** — which is why chokepoints, pricing power and geopolitics define the industry.
@@ -734,6 +738,7 @@ Data-centre AI is now the industry's demand engine. Nvidia's rise from ~$27 bn r
 The structural summary of 2025–26: **demand has gone vertical (AI), supply of the scarcest things (HBM, CoWoS, leading-edge wafers) is rationed, governments are co-investors everywhere, and the back-end — packaging and test — has moved from the industry's periphery to its centre.** That is the global backdrop against which India's OSAT bet must be judged — and it is, on balance, the most favourable backdrop a new packaging ecosystem could have asked for.
 
 ---
+
 # SECTION 7: THE INDIAN SEMICONDUCTOR INDUSTRY
 
 ## 7.1 The ecosystem India already has
@@ -864,6 +869,7 @@ Taiwan (tax credits; legacy ecosystem)  ███                           smal
 Two comparative judgements: (1) In absolute money India's ~$23 bn is a fraction of US/China programmes — but measured as **share of project capex covered**, India's 50% + state stack is the most generous regime in the world, which is exactly what a zero-base ecosystem needs. (2) The unresolved comparison is **speed and depth of disbursement**: Japan built Kumamoto in 22 months; India's test is whether Dholera's fab and the ATMP dozen convert approvals into shipped volume on comparable timelines. The early OSAT evidence (Micron, Kaynes, Suchi) is encouraging.
 
 ---
+
 # SECTION 9: SPECIAL STUDY — SUCHI SEMICON AND THE FUTURE OF OSAT IN INDIA
 
 *A consulting-style growth study of India's first private home-grown OSAT. Public information is limited for a young private company; figures below combine company statements, the Cabinet approval release and trade press, and the forward path is explicitly scenario analysis, not guidance.*
@@ -993,6 +999,7 @@ The base case assumes what the evidence so far supports: the plant fills (ROHM-c
 | Global packaging shortage & AI overflow; Dholera fab output (2027+) requiring onshore ATMP; auto/EV/solar localisation mandates; ISM 2.0 funding the missing substrate/leadframe ecosystem; defence/space sovereign demand | Commoditisation of wirebond tier by Chinese overcapacity; tier-1 OSATs opening India plants and outcompeting locals (ASE/Amkor have optionality); customer qualification timelines (12–24 months) outlasting startup balance sheets; currency/duty shocks on imported inputs |
 
 ---
+
 # SECTION 11: INVESTMENT AND FINANCIAL ANALYSIS
 
 ## 11.1 Where the value sits
@@ -1091,6 +1098,7 @@ The honest 2040 question is not whether India will matter in semiconductors — 
 Semiconductors took Taiwan from assembly lines to the centre of the world economy in one generation. India has, for the first time, assembled all four preconditions of that journey — talent, demand, capital and policy. The back-end is the front door, and India has stepped through it.
 
 ---
+
 # APPENDIX A: GLOSSARY (200+ SEMICONDUCTOR TERMS)
 
 **A–B**
