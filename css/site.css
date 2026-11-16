@@ -705,6 +705,81 @@ table.sheet td.cell-selected { outline: 2px solid var(--green); outline-offset: 
 .hero h1 { color: var(--paper); font-size: 2.2rem; margin: 0 0 0.6rem; }
 .hero p { color: #C7D0D6; max-width: 34rem; font-size: 1.05rem; }
 .hero .btn-primary { margin-top: 0.8rem; display: inline-block; text-decoration: none; }
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.8rem;
+  margin-top: 1.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.85rem;
+  color: #AEB9C0;
+}
+.hero-stats b {
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 0.3rem;
+}
+
+/* home page sections */
+.page-home .home-section { margin-top: 2.8rem; }
+.section-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin: 0 0 0.1rem;
+}
+.home-section > h2 { margin-top: 0.15rem; }
+.section-lede { color: var(--ink-soft); margin-top: 0.4rem; }
+.home-fine { font-size: 0.85rem; color: var(--ink-faint); margin-top: 1rem; }
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.step-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--green);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow);
+}
+.step-card .step-num {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.step-card h3 { margin: 0.25rem 0 0.3rem; font-size: 1.05rem; }
+.step-card p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+
+.level-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 1.8rem 0 0;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.05rem;
+}
+.level-head .level-progress {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  flex: none;
+}
 
 .module-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; margin-top: 1.4rem; }
 .module-card {

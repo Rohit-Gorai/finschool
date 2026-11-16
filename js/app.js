@@ -663,39 +663,111 @@
     if (m && desc) m.setAttribute("content", desc);
   }
 
+  // A titled <section> for the home page: numbered kicker, heading, optional lede.
+  function homeSection(num, slug, title, lede) {
+    var s = document.createElement("section");
+    s.className = "home-section";
+    s.setAttribute("aria-labelledby", slug);
+    s.appendChild(el("p", "section-kicker", esc(num)));
+    var h = el("h2", null, esc(title));
+    h.id = slug;
+    s.appendChild(h);
+    if (lede) s.appendChild(el("p", "section-lede", lede));
+    return s;
+  }
+
+  function moduleCard(mc) {
+    var m = LS.manifest.modules[mc];
+    var prog = moduleProgress(mc);
+    var a = el("a", "module-card");
+    a.href = "#/module/" + mc;
+    a.innerHTML = '<span class="mc-code">' + mc + "</span><h3>" + esc(m.title) + "</h3><p>" + esc(m.blurb) + "</p>" +
+      '<div class="progress-track"><div class="progress-fill" style="width:' + (prog.total ? Math.round(prog.done / prog.total * 100) : 0) + '%"></div></div>' +
+      '<div class="mc-meta"><span>' + prog.done + "/" + prog.total + " lessons</span><span>~" + moduleMinutes(mc) + " min</span></div>";
+    return a;
+  }
+
   function renderHome() {
     setMeta("LedgerSchool — Learn finance by building it",
       "Free, text-only finance school. Learn accounting, the three statements, ratios and modeling by building every number in a live spreadsheet.");
-    var page = el("div", "page");
-    var hero = el("div", "hero");
+    var page = el("div", "page page-home");
+
+    /* ---- hero: pitch, start/continue CTA, course stats ---- */
+    var order = allLessonIdsInOrder();
+    var doneCount = 0, firstTodo = null, sandboxes = 0, totalMin = 0;
+    order.forEach(function (id) {
+      if (store.isDone(id)) doneCount++;
+      else if (!firstTodo) firstTodo = id;
+      ((LS.lessons[id] || {}).body || []).forEach(function (b) { if (b.t === "sheet") sandboxes++; });
+    });
+    Object.keys(LS.manifest.modules).forEach(function (mc) { totalMin += moduleMinutes(mc); });
+
+    var hero = el("section", "hero");
+    hero.setAttribute("aria-label", "LedgerSchool");
     hero.innerHTML =
       "<h1>Learn finance by building it.</h1>" +
       "<p>No videos. No sign-up. Short lessons that end in a live spreadsheet where <em>you</em> type the formula — and the balance sheet has to tie. Follow one café, " + esc(LS.C.name) + ", from its first invoice to a full valuation model.</p>";
-    var cta = el("a", "btn btn-primary", "Start with lesson 1010 →");
-    cta.href = "#/" + LS.manifest.modules[LS.manifest.levels[0].modules[0]].lessons[0];
+    var cta = el("a", "btn btn-primary");
+    if (doneCount > 0 && firstTodo) {
+      var nextLesson = LS.lessons[firstTodo];
+      cta.textContent = "Continue with " + nextLesson.code + " " + (nextLesson.short || nextLesson.title) + " →";
+      cta.href = "#/" + firstTodo;
+    } else {
+      cta.textContent = "Start with lesson 1010 →";
+      cta.href = "#/" + order[0];
+    }
     hero.appendChild(cta);
+    var stats = el("div", "hero-stats");
+    stats.innerHTML =
+      "<span><b>" + order.length + "</b> lessons</span>" +
+      "<span><b>" + Object.keys(LS.manifest.modules).length + "</b> modules</span>" +
+      "<span><b>" + sandboxes + "</b> live sandboxes</span>" +
+      "<span><b>~" + Math.round(totalMin / 60) + " hrs</b> reading &amp; building</span>" +
+      (doneCount ? "<span><b>" + doneCount + "/" + order.length + "</b> done</span>" : "");
+    hero.appendChild(stats);
     page.appendChild(hero);
 
-    page.appendChild(el("h2", null, "The syllabus"));
-    page.appendChild(el("p", null, "Modules are numbered like a chart of accounts. Work top to bottom; every number you meet later is one you built earlier."));
-    var cards = el("div", "module-cards");
-    LS.manifest.levels.forEach(function (lv) {
-      lv.modules.forEach(function (mc) {
-        var m = LS.manifest.modules[mc];
-        var prog = moduleProgress(mc);
-        var a = el("a", "module-card");
-        a.href = "#/module/" + mc;
-        a.innerHTML = '<span class="mc-code">' + mc + "</span><h3>" + esc(m.title) + "</h3><p>" + esc(m.blurb) + "</p>" +
-          '<div class="progress-track"><div class="progress-fill" style="width:' + (prog.total ? Math.round(prog.done / prog.total * 100) : 0) + '%"></div></div>' +
-          '<div class="mc-meta"><span>' + prog.done + "/" + prog.total + " lessons</span><span>~" + moduleMinutes(mc) + " min</span></div>";
-        cards.appendChild(a);
-      });
+    /* ---- 01 · how it works ---- */
+    var how = homeSection("01 · The method", "home-how", "How it works");
+    var steps = el("div", "steps-grid");
+    [
+      ["Read", "A definition, the formula, then the café's real numbers. Every lesson is three to eight minutes, one concept per page."],
+      ["Build", "Type the formula yourself in a live spreadsheet. Where the formula is the point, a hardcoded answer is rejected."],
+      ["Check", "Every cell is checked automatically — and the balance sheet has to tie before the lesson counts as done."]
+    ].forEach(function (st, i) {
+      var card = el("div", "step-card");
+      card.appendChild(el("span", "step-num", "Step " + (i + 1)));
+      card.appendChild(el("h3", null, esc(st[0])));
+      card.appendChild(el("p", null, st[1]));
+      steps.appendChild(card);
     });
-    page.appendChild(cards);
+    how.appendChild(steps);
+    how.appendChild(el("p", "home-fine", "Progress is saved in your browser; nothing is sent anywhere, and there is no account to make."));
+    page.appendChild(how);
 
+    /* ---- 02 · syllabus, grouped by level ---- */
+    var syl = homeSection("02 · The course", "home-syllabus", "The syllabus",
+      "Modules are numbered like a chart of accounts. Work top to bottom; every number you meet later is one you built earlier.");
+    LS.manifest.levels.forEach(function (lv) {
+      var lvDone = 0, lvTotal = 0;
+      lv.modules.forEach(function (mc) {
+        var p = moduleProgress(mc);
+        lvDone += p.done; lvTotal += p.total;
+      });
+      var head = el("h3", "level-head");
+      head.appendChild(el("span", null, esc(lv.title)));
+      head.appendChild(el("span", "level-progress", lvDone + "/" + lvTotal + " lessons"));
+      syl.appendChild(head);
+      var cards = el("div", "module-cards");
+      lv.modules.forEach(function (mc) { cards.appendChild(moduleCard(mc)); });
+      syl.appendChild(cards);
+    });
+    page.appendChild(syl);
+
+    /* ---- 03 · reference ---- */
     if (LS.reference) {
-      page.appendChild(el("h2", null, "Reference"));
-      page.appendChild(el("p", null, "Look things up without hunting through lessons: every statement line defined in two sentences, and every formula in the course on one page."));
+      var ref = homeSection("03 · Look things up", "home-reference", "Reference",
+        "Every statement line defined in two sentences, and every formula in the course on one page — no hunting through lessons.");
       var refCards = el("div", "module-cards");
       Object.keys(LS.reference).forEach(function (rid) {
         var r = LS.reference[rid];
@@ -704,11 +776,9 @@
         a.innerHTML = '<span class="mc-code">§</span><h3>' + esc(r.title) + "</h3><p>" + esc(r.lede) + "</p>";
         refCards.appendChild(a);
       });
-      page.appendChild(refCards);
+      ref.appendChild(refCards);
+      page.appendChild(ref);
     }
-
-    page.appendChild(el("h2", null, "How it works"));
-    page.appendChild(el("p", null, "Every lesson takes three to eight minutes: a definition, a formula, the café's real numbers, then a spreadsheet where you build the figure yourself. The sandbox checks your work and — where the point of the lesson is the formula — refuses to accept a hardcoded number. Progress is saved in your browser; nothing is sent anywhere, and there is no account to make."));
 
     content.innerHTML = "";
     content.appendChild(page);
